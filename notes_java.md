@@ -1,3 +1,5 @@
+
+
 ### Copy Constructor in Java
 
 * humara copy constructor galat tha
@@ -291,7 +293,7 @@ ls
 Now our file becomes green in colour.
 
 ```
-./FirstProgram
+./FirstProgramfill
 ```
 
 To run the same.Dialog box opens.If we don't have qmake, we can execute from terminal.
@@ -362,6 +364,195 @@ MyDialog::~MyDialog()
 
 * To check the documentation of any object,click on function or class and press F1.
 
-  ----------------------------------
+* We can't call function AddWidget of QLayout in grid program because this function of QLayout is different from the function of QGridLayout.
+
+  /home/kpit/workspace/Qt/gridBoxes/mydialog.cpp:11: error: no matching function for call to ‘QLayout::addWidget(QPushButton*&, int, int)’
+       layout->addWidget(firstButton,1,1);
+                                        ^
+
+### Hierarchy of Classes
+
+see diagram in notebook
+
+QLayout
+
+​        -QBoxLayout
+
+​		-QVBoxLayer
+
+​		-QHBoxLayout
+
+`	-QGridLayout
+
+​		-addWidget(Qwidget)
+
+​		-addWidget(Qwidget *,int,int)
+
+### Alert Message
+
+```
+QMessageBox::information(this,"Your Message","Cleared successfully");
+```
+
+We don't need to create object here because information is a static method.
+
+---------------------
+
+### Properties
+
+ |**Read** |
+
+​                                           **write**
+
+**text**                                         text()  						 SetText()
+
+value                        	     value()						  SetValue()
+
+enabled                  	enabled()					   SetEnabled()
+
+  digitsCount 
+
+* **Slot**-Whenever button clicked,event handler automatically calls it. 
+* **Q_OBJECT**-not std c++ class,not function ,not variable,Represents some Qt extensions.As std c++ cannot understand signals,slot,so there is MOC(Meta Object Compiler). MOC generates windows compatible c++  code or a C++ file based on Qt extensions.Meta is something which describes some other code,Meta object that defines other object.
+* main.cpp  ->  main.o
+* mydialog.cpp   ->  mydialog.o------------------------------------------->MyFirstApplication
+* mydialog.h ->   moc_mydialog.cpp  ->   moc_mudialog.o------>
+* profile decides how to generate make file.
+* qmake converts makefile into profile.
+
+Q_Object decides wether to use MOC or not.              
+
+* **qtcreater**     -whatever we r doing on terminal is done on qtcreater.
+
+* **uic--ui compiler**
+
+  mydialog.ui -> mydialog.h  //converted by uic
+
+  rest all same process
+
+  * Use **qmake** command on terminal to see all the conversions.
+  * We include "ui_mydialog.h" in mydialog.cpp. 
+
+* **Assistant**-gives qt documentation.
+
+* Tools-moc,uic,assistant
+
+* linguist for lang translation (english->spanish) not for our use.
+
+* to generate pro file `qmake -project`(Surviving with command line argument)
+
+   * first create main.cpp
+  * Then `qmake -project`
+  * `ls`
+  * We need to make some additions to pro file.
+  * `make`
+  * `ls`
+  * For purely command linea ppliaction we use QCore application,refer edu online.
+
+```c++
+Q_PROPERTY(int temperature READ temperature WRITE setTemperature NOTIFY temperatureChanged)  
+Q_PROPERTY(double humidity READ humidity WRITE setHumidity NOTIFY humidityChanged)
+```
+
+* These are micros,for each property there msut be a private variable.
+
+* **signals** ---- each notifying method.
+
+  ```c++
+  signals:
+      temperatureChanged(int);//no void or data type required
+      humidityChanged(double);//only declaration required,no definition
+  
+  ```
 
   
+
+Qt Property System  : --  In Qt classes we don't need to give
+
+---------------------------------
+
+# QML
+
+Qt Quick Module:
+
+Core
+
+gui
+
+widgets
+
+* Use of QML  -->  
+
+  ```javascript
+  import QtQuick 2.9
+  import QtQuick.Window 2.2
+  
+  Window {//means a window will come
+      visible: true
+      width: 640
+      height: 480
+      title: qsTr("Hello World")//qstr is unified string handing mehanism
+  ```
+
+`ls`
+
+`qml-demo$ qmlscene main.qml`
+
+**Exporting properties from cpp:-**
+
+```
+QQmlEngineContext *context=engine.rootContext();
+
+context->setContextProperty("weather",&w1);
+
+```
+
+
+
+in Qml:-
+
+//weather.temperature,weather.humidity
+
+**dbus from Terminal**
+
+```
+dbus-send --session --reply-timeout=120000 --type=method_call --dest='org.examples.ivi.dashboard' '/vehicle' 'local.qmlcppdemo.MyController.updateSpeedDBus' string:70
+
+```
+
+### CAN
+
+to prepare a virtual CAN:
+
+```
+sudo modprobe vcan
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+sudo apt-get install can-utils
+ candump vcan0
+ 
+ cansend vcan0 064#4142 //41==A & 42==B in ASCII
+ 
+```
+
+can dump and sen din two different files
+
+### Sending CAN Frames
+
+QCANBus frame;
+
+```c++
+CANAdaptor::CANAdaptor(QObject *parent) : QObject(parent)
+{
+QCANBusFrame frame;
+frame.setFrameId(0x128);
+QByteArray data;
+data.setNum(40);
+frame.setPayload(data);
+m_canDevice.writeFrame(frame);
+}
+```
+
+
+
+* when we talk to any external agent it is done through middle ware solutions.ex:CANbus and Dbus
